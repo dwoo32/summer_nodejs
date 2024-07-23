@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>새 게시글 작성</title>
+    <style>
+        table {
+            width: 500px;
+        }
+    </style>
+</head>
+<body>
+    <h1>새 게시글 작성 페이지</h1>
+    <!-- submit은 클라이언트에서 서버로 데이터를 전송한다는 의미
+    서버로 데이터가 전송되기 바로 전에 form태그의 onSubmint 이벤트가 발생 -->
+    <form method="post" action="/article/create" onsubmit="return checkForm();">
+        제목: <input type="text" id="title" name="title"/><br/>
+        내용:<br/>
+        <textarea id="contents" name="contents" rows="20"></textarea><br/>
+        게시여부:
+        <select id="display" name="display">
+            <option value="9">선택</option>
+            <option value="1">게시</option>
+            <option value="0">게시안함</option>
+        </select>
+        <br/>
+        <input type="submit" value="저장"/>
+    </form>
+
+    <script>
+        function checkForm(){
+            // var title = document.getElementById('title');
+            // var contents = document.getElementById('contents');
+            // var display = document.getElementById('display');
+
+            // if(title.value.trim() == ''){
+            //     alert('제목을 입력하세요.');
+            //     title.focus();
+            //     return false;
+            // }
+
+            // if(contents.value.trim() == ''){
+            //     alert('내용을 입력하세요.');
+            //     contents.focus();
+            //     return false;
+            // }
+
+            // if(display.value == '9'){
+            //     alert('게시여부를 선택하세요.');
+            //     display.focus();
+            //     return false;
+            // }
+
+            // return true;
+
+            if(document.getElementById('title').value == ''){
+                alert('제목을 입력하세요.');
+                document.getElementById('title').focus();
+                return false; //진행상황을 멈춰 ~ ! 
+            }
+            return true; //서버로 폼 데이터 전송 ! 
+        }
+    </script>
+
+</body>
+</html>
