@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* 임시메인 페이지 요청과 응답처리 라우팅 메소드 */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index');//파일명
 });
 
 /* 
@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
 - 응답결과: login.ejs 뷰페이지 반환
 */
 router.get('/login', function(req, res, next) {
-  res.render('login.ejs',{resultMsg:''});
+  res.render('login.ejs');
 });
 
 /* 
@@ -31,7 +31,7 @@ router.post('/login', function(req, res, next) {
 
   if(result){
       //정상 로그인시 
-      res.redirect('/main');
+      res.redirect('/main'); //url주소
   }else{
       //아이디 또는 암호가 틀리면 다시 로그인페이지 반환
       res.render('login.ejs',{resultMsg:'로그인 실패'});
