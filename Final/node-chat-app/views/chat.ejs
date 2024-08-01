@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅서버에 연결된 모든 사용자들간 채팅</title>
+</head>
+<body>
+    <h1>채팅서버에 연결된 모든 사용자들간 채팅</h1>
+    닉네임:<input type="text" id="nickname"/> <br/>
+    메시지:<input type="text" id="message"/> <br/>
+    <button id="btnSend">전송</button>
+
+
+    <!-- 채팅 수신 이력 표시영역 -->
+    <ul id="chatHistory">
+        
+    </ul>
+
+    <!-- jquery cdn 라이브러리 참조 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- socket.io javascript library 참조 -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- 아래 부분이 프론트엔드 코딩영역/웹브라우저에서 실행됨 -->
+    
+    <script>
+        //클라이언트(웹브라우저) 서버 연결 소켓 객체 정의
+        //서버 소켓과 연결을 시도하고 연결이 완료되면 연결이 지속됨
+        //io.connect('/')을 통해 서버소켓과 연결을 완료하고
+        //서버로 메시지를 보낼 socket객체가 반환됨
+        var socket = io.connect('/');
+
+        //jqurey에서 html요소의 id값으로 html요소 찾기
+        //전송버튼 클릭 이벤트 처리
+        $("#btnSend").click(function(){
+            //socket.emit('서버이벤트 수신기명','서버로 전송할 데이터');
+
+            //사용자 닉네임과 메시지 추출
+            var nickName = $("#nickname").val();
+            var message = $("#message").val();
+
+            var msgData = `${nickName}:${message}`;
+            socket.emit('broadcast',msgData);
+
+        });
+
+
+        //서버에서 보내준 메시지를 수신하는 수신기 정의하기
+        //클라이언트 이벤트 메시지 수신기 정의하기
+        socket.on('receiveAll',function(serverMsg){
+
+            //서버에서 보내준 문자열을 포함한 li태그를 하나 만들고
+            //ul채고에 li태그를 추가하기
+            $("#chatHistory").append(`<li>${serverMsg}</li>`);
+        });
+
+    </script>
+</body>
+</html>

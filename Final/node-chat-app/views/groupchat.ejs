@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅서버에 연결된 모든 사용자들간 채팅</title>
+</head>
+<body>
+    <h1>채팅방 기준 사용자들간 채팅</h1>
+    STEP1:채팅방을 개설하고 닉네임으로 입력해 입장<br/>
+    STEP2:채팅방에서 채팅<br/>
+
+    닉네임:<input type="text" id="nickname"/> <br/>
+    채팅방:<input type="text" id="channel"/>
+    <button id="btnEntry">입장</button>
+    <button id="btnExit">퇴장</button>
+    <br/><br/>
+
+    메시지:<input type="text" id="message"/> <br/>
+    <button id="btnSendMsg">전송</button>
+
+    <!-- 채팅 수신 이력 표시영역 -->
+    <ul id="chatHistory">
+    </ul>
+
+    <!-- jquery cdn 라이브러리 참조 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- socket.io javascript library 참조 -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- 아래 부분이 프론트엔드 코딩영역/웹브라우저에서 실행됨 -->
+    <script>
+        // 클라이언트(웹브라우저) 서버 연결 소켓 객체 정의
+        var socket = io.connect('/');
+
+        // 채팅 메시지 전송 버튼 클릭 이벤트 처리
+        $("#btnSendMsg").click(function(){
+            // 사용자 닉네임과 메시지 추출
+            var nickName = $("#nickname").val();
+            var message = $("#message").val();
+
+            var msgData = {
+                channel: $("#channel").val(),
+                nickName,
+                message
+
+            };
+
+            //서버 소켓의 그룹채팅 메시지 수신기 호출
+            socket.emit('channelMsg', msgData);
+        });
+
+        // 서버에서 보내준 메시지를 수신하는 수신기 정의하기
+        socket.on('receiveAll', function(serverMsg){
+            // 서버에서 보내준 문자열을 포함한 li 태그를 하나 만들고
+            // ul 태그에 li 태그를 추가하기
+            $("#chatHistory").append(`<li>${serverMsg}</li>`);
+        });
+
+        //그룹 채팅 메시지 수신기 정의
+        socket.on('receiveChannel', function(serverMsg){
+            // 서버에서 보내준 문자열을 포함한 li 태그를 하나 만들고
+            // ul 태그에 li 태그를 추가하기
+            $("#chatHistory").append(`<li>${serverMsg}</li>`);
+        });
+
+
+        // 입력한 채널(채팅방)에 특정 닉네임으로 입장하기
+        $("#btnEntry").click(function(){
+            // 채널명과 닉네임 요소를 UI요소에서 추출
+            const channel = $("#channel").val();
+            const nickName = $("#nickname").val();
+
+            // 서버로 입장 메시지 전송하기
+            socket.emit('entry', channel, nickName);
+        });
+
+        // 채팅방 입장 완료 후 입장완료 메시지 수신기 구현
+        socket.on('entryOK', function(entryMsg){
+            $("#chatHistory").append(`<li>${entryMsg}</li>`);
+        });
+
+        $("#btnExit").click(function(){
+            const channel = $("#channel").val();
+            const nickName = $("#nickname").val();
+            socket.emit('exit',channel,nickName);
+        });
+
+        // 채팅방 퇴장 완료 후 퇴장완료 메시지 수신기 구현
+        socket.on('exitOK',function(exitMsg){
+            $("#chatHistory").append(`<li>${exitMsg}</li>`);
+        });
+
+
+    </script>
+</body>
+</html>
