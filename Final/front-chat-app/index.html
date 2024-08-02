@@ -501,7 +501,7 @@
 											<a class="dropdown-item offline" href="#">Offline</a>
 										</div>
 									</div>
-									<h5>Jennifer Lopezx</h5>
+									<h5 id="profile_name">Jennifer Lopezx</h5>
 									<h6>Bern, Switzerland</h6>
 								</div>
 								<!-- User profile end -->
@@ -1814,6 +1814,38 @@
     	<script src="https://cdn.socket.io/4.4.1/socket.io.min.js" crossorigin="anonymous"></script>
 
 		<script>
+
+			
+			//웹페이지가 웹브라우저에 완전 로깅완료되는 시점에 백엔드 API호출하여
+			//현재 로그인한 사용자의 프로필을 조회한다
+			$(document).ready(function(){
+
+				//웹브라우저에 저장된 토큰값 추출
+				var jwtToken=localStorage.getItem("chatMemberToken");
+
+
+				//index.html은 반드시 로그인 후 접속 가능하며
+				//로그인을 했으면 토큰값이 웹브라우저 스토리지에 저장되었을 거니까 체크해서 없으면 로그인 페이지로 이동하기
+				if(jwtToken==undefined){
+					//로그인이 되어있지 않으면 로그인 페이지로 이동하기
+					location.href='./login.html';
+				}
+
+				//get방식으로 API호출
+				$.ajax({
+					type:'GET',
+					url:'http://localhost:5000/api/member/profile',
+					headers:{Authorization:`Bearer ${jwtToken}`},
+					dataType:"json",
+					sucess:function(result){
+						console.log("프로필 조회 결과: ", result);
+						$("#profile_name").text(result.data.member_name);
+					},
+					error:function(err){
+						console.error("프로필 조회 실패: ", err);
+					}
+				});
+			});
 
 			//현재 URL에서(/front/modify.html?id=1) 쿼리스트링 키명으로 값을 추출하는 클라이언트 자바스크립트 함수 
 			//정규식 문법을 이용한 키값추출하기 

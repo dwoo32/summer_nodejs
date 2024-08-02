@@ -54,24 +54,24 @@
 				</div>
 				<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 					<div class="login-wrapper">
-						<form action="index.html">
+						<form id="loginForm">
 							<div class="login-screen">
 								<div class="login-body">
 									<a href="index.html" class="login-logo">
 										<img src="img/logo.svg" alt="Quick Chat">
 									</a>
-									<h6>Welcome back,<br>Please login to your account.</h6>
+									<h6>환영합니다<br>로그인 해주세요</h6>
 									<div class="field-wrapper">
-										<input type="email" autofocus>
-										<div class="field-placeholder">Email ID</div>
+										<input type="email" id="email" autofocus>
+										<div class="field-placeholder">메일 주소</div>
 									</div>
 									<div class="field-wrapper mb-3">
-										<input type="password">
-										<div class="field-placeholder">Password</div>
+										<input type="password" id="password">
+										<div class="field-placeholder">암호</div>
 									</div>
 									<div class="actions">
-										<a href="forgot-password.html">Forgot password?</a>
-										<button type="submit" class="btn btn-primary">Login</button>
+										<a href="forgot-password.html">암호를 잊어버리셨나요?</a>
+										<button type="submit" class="btn btn-primary">로그인</button>
 									</div>
 								</div>
 								<div class="login-footer">
@@ -89,5 +89,71 @@
 			************ Login container end *************
 		************* -->
 
+
+
+
+		<!-- Jqurey 라이브러리 참조하기 -->
+		<script src="js/jquery.min.js"></script>
+		<script>
+
+			//로그인 폼 유효성 검사 진행 후 백엔드 로그인 API 호출
+			$("#loginForm").submit(function(e){
+
+				//form submit 이벤트 실행 취소(화면 재로딩 방지)
+				e.preventDefault();
+
+				//Step1: 사용자 입력값의 유효성 검증하기
+				if($("#email").val() == ""){
+					alert("이메일 주소를 입력하세요");
+					$("#email").focus();
+					return false;
+				}
+
+				if($("password").val() == ""){
+					alert("암호를 입력하세요");
+					$("#password").focus();
+					return false;
+				}
+
+				//Step2: 사용자 입력 값을 UI요소에 추가해서 JSON데이터 생성하기
+				var member={
+					email:$("#email").val(),
+					password:$("#password").val()
+					
+				};
+
+				//Step3: UI요소에서 추출한 JSON데이터를 백엔드 RESTFUL API에 전달해서 회원가입 처리
+				//Jqurey의 AJAX를 이용해 post방식으로 벡엔드 API주소에 데이터 전송
+				$.post('http://localhost:5000/api/member/login',member).done(function(result){
+					//백엔드에서의 처리 결과 값 확인하기
+					console.log("백엔드에서의 처리 결과 값 확인하기 : ",result);
+
+					if(result.code==200){
+						//Step4: 백엔드에서 제공해준 JWT토큰값 웹브라우저 로컬 스토리지 공간에 저장하기
+						localStorage.setItem("ChatMemberToken",result.data);
+
+
+						//index.html로 이동하기
+						location.href="./index.html";
+					}
+					else{
+						if(result.code==400 && result.msg=="NotExistEmail"){
+							alert("존재하지 않는 이메일입니다\n");
+							$("#email").val("");
+							$("#email").focus();
+						}
+						else if(result.code==400 && result.msg=="IncorrectPassword"){
+							alert("암호가 일치하지 않습니다\n");
+							$("#password").val("");
+							$("#password").focus();
+						}
+						else{
+						alert("로그인 실패\n 관리자에게 문의하세요");
+						}
+					}
+				});
+
+			})
+		</script>
 	</body>
 </html>

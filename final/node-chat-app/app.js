@@ -4,13 +4,27 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
+//환경설정 정보 구성하기
+require("dotenv").config();
+
+//시퀄라이즈 ORM 객체 참조하기
+var sequelize = require("./models/index.js").sequelize;
+
 //RESTful API 서비스 CORS 이슈해결을 위한 cors 패키지 참조하기
 const cors = require("cors");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 
+//회원정보 관리 RESTFUL API 라우터 참조
+var memberAPIRouter = require("./routes/memberAPI");
+// var channelAPIRouter = require("./routes/channelAPI");
+// var articleAPIRouter = require("./routes/articleAPI");
+
 var app = express();
+
+//mysql과 자동연결처리 및 모델기반 물리 테이블 생성처리제공
+sequelize.sync();
 
 //모든 웹사이트/모바일 프론트에서 RESTAPI를 접근할수 있게 허락함
 app.use(cors());
@@ -35,6 +49,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/api/member", memberAPIRouter);
+// app.use("/api/channel", channelAPIRouter);
+// app.use("/api/article", articleAPIRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
