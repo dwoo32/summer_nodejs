@@ -501,7 +501,7 @@
 											<a class="dropdown-item offline" href="#">Offline</a>
 										</div>
 									</div>
-									<h5 id="profile_name">Jennifer Lopezx</h5>
+									<h5 id="profile-name"></h5>
 									<h6>Bern, Switzerland</h6>
 								</div>
 								<!-- User profile end -->
@@ -1263,18 +1263,17 @@
 
 												<div class="account-settings-body">
 
+													<!-- 현재 로그인 사용자 프로필 이미지 확인영역 -->
 													<div class="upload-profile">
-
 														<div class="upload-profile-image">
-															<img src="img/user2.png" alt="Profile Image">
+															<img src="img/user2.png" id="profileImage" alt="Profile Image">
 														</div>
 														<div class="field-wrapper">
 															<div class="custom-file">
-																<input type="file" class="custom-file-input" id="uploadProfile">
+																<input type="file"  class="custom-file-input" id="uploadProfile" name="file">
 																<label class="custom-file-label" for="uploadProfile">Choose file</label>
 															</div>
 														</div>
-
 													</div>
 
 													<div class="field-wrapper">
@@ -1609,7 +1608,7 @@
 									</div>
 									<div class="field-wrapper">
 										<div class="custom-file">
-											<input type="file" class="custom-file-input" id="uploadProfile">
+											<input type="file" class="custom-file-input">
 											<label class="custom-file-label" for="uploadProfile">Group image</label>
 										</div>
 									</div>
@@ -1688,7 +1687,7 @@
 									</div>
 									<div class="field-wrapper">
 										<div class="custom-file">
-											<input type="file" class="custom-file-input" id="uploadProfile">
+											<input type="file" class="custom-file-input">
 											<label class="custom-file-label" for="uploadProfile">Group image</label>
 										</div>
 									</div>
@@ -1815,34 +1814,32 @@
 
 		<script>
 
-			
-			//웹페이지가 웹브라우저에 완전 로깅완료되는 시점에 백엔드 API호출하여
-			//현재 로그인한 사용자의 프로필을 조회한다
+			//웹페이지가 웹브라우저에 완전 로깅완료되는 시점에 백엔드 API를 호출해
+			//현재 로그인한 사용자의 프로필 정보를 조회해온다. 
 			$(document).ready(function(){
 
-				//웹브라우저에 저장된 토큰값 추출
-				var jwtToken=localStorage.getItem("chatMemberToken");
+				//웹브라우저에 저장된 토큰값을 추출한다.
+				var jwtToken = localStorage.getItem('chatMemberToken');
 
-
-				//index.html은 반드시 로그인 후 접속 가능하며
-				//로그인을 했으면 토큰값이 웹브라우저 스토리지에 저장되었을 거니까 체크해서 없으면 로그인 페이지로 이동하기
-				if(jwtToken==undefined){
-					//로그인이 되어있지 않으면 로그인 페이지로 이동하기
-					location.href='./login.html';
+				//index.html페이지는 반드시 로그인후 접속이 가능하며
+				//로그인을 했으면 토큰값이 웹브라우저에 스토로지에 저장되었을것이니까...
+				//체크해서 없으면 로그인 페이지로 안내하기 
+				if(jwtToken == undefined){
+					location.href = "./login.html";
 				}
 
-				//get방식으로 API호출
+				//get방식으로 API를 호출함..
 				$.ajax({
-					type:'GET',
+					type:'Get',
 					url:'http://localhost:5000/api/member/profile',
-					headers:{Authorization:`Bearer ${jwtToken}`},
+					headers:{ Authorization:`Bearer ${jwtToken}`},
 					dataType:"json",
-					sucess:function(result){
-						console.log("프로필 조회 결과: ", result);
-						$("#profile_name").text(result.data.member_name);
+					success:function(result){
+						console.log("프로필 정보 확인하기:",result);
+						$("#profile-name").text(result.data.name);
 					},
 					error:function(err){
-						console.error("프로필 조회 실패: ", err);
+						console.error("백엔드 API 호출에러 발생....");
 					}
 				});
 			});
@@ -1927,9 +1924,36 @@
 			
 			});
 	
-	
-	
-	
+			//파일 첨부 태그의 change이벤트가 발생하면 파일을 서버로 전송한다.
+			$("#uploadProfile").change(function(e){
+
+				//폼태그를 프로그래밍적으로 구현하는 FormData객체를 생성한다.
+				var data = new FormData();
+				data.append('file',$("input[name=file]")[0].files[0]);
+
+				console.log("프론트엔드에서 전송하는 파일데이터:",data);
+
+				e.preventDefault();
+
+				//백엔드 RESTAPI주소로 파일 데이터를 전송하고 반환받습니다.
+				$.ajax({
+					data:data,
+					type:'POST',
+					url:'http://localhost:5000/api/member/profile/upload',
+					cache:false,
+					contentType:false,
+					processData:false,
+					success:function(result){
+						console.log("파일전송결과:",result);
+					},
+					error:function(err){
+						console.error("파일전송에러발생:",err);
+					}
+				});
+
+				return false;
+			});
+			
 		</script>
 	
 	
