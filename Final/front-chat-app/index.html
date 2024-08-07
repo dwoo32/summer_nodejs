@@ -1831,7 +1831,7 @@
 				//get방식으로 API를 호출함..
 				$.ajax({
 					type:'Get',
-					url:'http://localhost:5000/api/member/profile',
+					url:'http://cbnu04.webrtcmaker.com/api/member/profile',
 					headers:{ Authorization:`Bearer ${jwtToken}`},
 					dataType:"json",
 					success:function(result){
@@ -1939,7 +1939,7 @@
 				$.ajax({
 					data:data,
 					type:'POST',
-					url:'http://localhost:5000/api/member/profile/upload',
+					url:'http://cbnu04.webrtcmaker.com/api/member/profile/upload',
 					cache:false,
 					contentType:false,
 					processData:false,

@@ -17,7 +17,7 @@ var sequelize = db.sequelize;
 const { QueryTypes } = sequelize;
 
 //관리자 로그인여부 체크 미들웨어 함수 참조하기
-const { isLoggined } = require("./sessionMiddleware.js");
+const { isLoggined } = require("./sessionmiddleware.js");
 
 /*
 - 관리자 계정 목록 조회 웹페이지 요청과 응답처리 라우팅메소드
